@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dira Shop</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #8B0000, #FF0000, #8B0000);
+      background-size: 400% 400%;
+      animation: neonFlow 10s ease infinite;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 30px;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    @keyframes neonFlow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .container {
+      background: rgba(0, 0, 0, 0.85);
+      padding: 25px;
+      border-radius: 12px;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 0 15px red;
+      color: white;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #FF4C4C;
+      text-shadow: 0 0 5px #FF0000;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    input[type=text], select, input[type=file] {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+
+    button, input[type=submit] {
+      margin-top: 20px;
+      width: 100%;
+      padding: 10px;
+      background: #FF4C4C;
+      border: none;
+      color: white;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover, input[type=submit]:hover {
+      background: #C70039;
+    }
+
+    #qrisBox {
+      border: 1px dashed #FF4C4C;
+      padding: 10px;
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    #qrisBox img {
+      width: 200px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Dira Shop</h1>
+    <form id="topupForm">
+      <label>Nama:</label>
+      <input type="text" id="nama" required />
+
+      <label>ID Game:</label>
+      <input type="text" id="idgame" required />
+
+      <label>Pilih Game:</label>
+      <select id="game" required onchange="updateDiamondList()">
+        <option value="">-- Pilih Game --</option>
+        <option value="Free Fire">Free Fire</option>
+        <option value="Mobile Legends">Mobile Legends</option>
+        <option value="PUBG Mobile">PUBG Mobile</option>
+      </select>
+
+      <label>Pilih Nominal Diamond:</label>
+      <select id="diamond" required>
+        <option value="">-- Pilih Nominal --</option>
+      </select>
+
+      <label>Metode Pembayaran:</label>
+      <select id="pembayaran" required onchange="tampilkanInputPembayaran()">
+        <option value="">-- Pilih Metode --</option>
+        <option value="Dana">Dana</option>
+        <option value="OVO">OVO</option>
+        <option value="Gopay">Gopay</option>
+        <option value="QRIS">QRIS</option>
+      </select>
+
+      <div id="inputNomor" style="display: none; margin-top: 10px;">
+        <label>Nomor E-Wallet:</label>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <input type="text" id="nomorEwallet" value="" readonly style="flex:1;" />
+          <button type="button" onclick="salinNomor()">Salin</button>
+        </div>
+      </div>
+
+      <div id="qrisBox" style="display: none;">
+        <label>Scan Heree:</label>
+        <img id="imgQRIS" src="https://files.catbox.moe/c66pz1.png" alt="QRIS" />
+      </div>
+
+      <label>Upload Bukti Transfer:</label>
+      <input type="file" id="bukti" accept="image/*" required />
+
+      <input type="submit" value="Kirim ke WhatsApp" />
+    </form>
+  </div>
+
+<script>
+    const diamondOptions = {
+      "Free Fire": [
+        "5 Diamond - Rp 1.500",
+        "12 Diamond - Rp 3.000",
+        "50 Diamond - Rp 8.000",
+        "100 Diamond - Rp 16.000",
+        "140 Diamond - Rp 20.000",
+        "210 Diamond - Rp 33.000",
+        "355 Diamond - Rp 50.000",
+        "425 Diamond - Rp 60.000",
+        "500 Diamond - Rp 70.000",
+        "720 Diamond - Rp 100.000",
+        "1050 Diamond - Rp 150.000",
+        "Membership Mingguan - Rp 32.000",
+        "Membership Bulanan - Rp 100.000",
+        
+      ],
+      "Mobile Legends": [
+        "3 Diamond - Rp 3.000",
+        "20 Diamond - Rp 8.000",
+        "54 Diamond - Rp 18.000",
+        "88 Diamond - Rp 27.000",
+        "148 Diamond - Rp 45.000",
+        "170 Diamond - Rp 53.000",
+        "184 Diamond - Rp 57.000",
+        "240 Diamond - Rp 75.000",
+        "258 Diamond - Rp 80.000",
+        "Starlight Member - Rp 100.000",
+        "Weekly Diamond Pas - Rp 30.000",
+        "Weekly Diamond Pas 2x - Rp 60.000",
+        "Weekly Diamond Pas 3x - Rp 90.000",
+        "Weekly Diamond Pas 4x - Rp 120.000",
+        "Weekly Diamond Pas 5x - Rp 155.000",
+        
+      ],
+      "PUBG Mobile": [
+        "60 UC - Rp 17.000",
+        "120 UC - Rp 34.000",
+        "180 UC - Rp 55.000",
+        "240 UC - Rp 65.000",
+        "325 UC - Rp 80.000",
+        "385 UC - Rp 95.000",
+        "Royale Pass - Rp 170.000",
+        "Elite Pass Plus - Rp 400.000",
+    ]
+  };
+
+  function updateDiamondList() {
+    const game = document.getElementById("game").value;
+    const diamondSelect = document.getElementById("diamond");
+    diamondSelect.innerHTML = "<option value=''>-- Pilih Nominal --</option>";
+    if (diamondOptions[game]) {
+      diamondOptions[game].forEach(option => {
+        const el = document.createElement("option");
+        el.value = option;
+        el.textContent = option;
+        diamondSelect.appendChild(el);
+      });
+    }
+  }
+
+  function tampilkanInputPembayaran() {
+    const metode = document.getElementById("pembayaran").value;
+    const inputNomor = document.getElementById("inputNomor");
+    const qrisBox = document.getElementById("qrisBox");
+    const nomorInput = document.getElementById("nomorEwallet");
+
+    const nomorMap = {
+      "Dana": "085822309902",
+      "OVO": "085822309902",
+      "Gopay": "085822309902"
+    };
+
+    if (["Dana", "OVO", "Gopay"].includes(metode)) {
+      nomorInput.value = nomorMap[metode];
+      inputNomor.style.display = "block";
+      qrisBox.style.display = "none";
+    } else if (metode === "QRIS") {
+      inputNomor.style.display = "none";
+      qrisBox.style.display = "block";
+    } else {
+      inputNomor.style.display = "none";
+      qrisBox.style.display = "none";
+    }
+  }
+
+  function salinNomor() {
+    const input = document.getElementById("nomorEwallet");
+    input.select();
+    input.setSelectionRange(0, 99999);
+    navigator.clipboard.writeText(input.value).then(() => {
+      alert("Nomor berhasil disalin: " + input.value);
+    });
+  }
+
+  document.getElementById("topupForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+    const nama = document.getElementById("nama").value.trim();
+    const idgame = document.getElementById("idgame").value.trim();
+    const game = document.getElementById("game").value;
+    const diamond = document.getElementById("diamond").value;
+    const pembayaran = document.getElementById("pembayaran").value;
+    const nomorEwallet = document.getElementById("nomorEwallet")?.value || '-';
+    const linkQRIS = "https://example.com/qris.png"; // GANTI DENGAN LINK QRIS PNG ASLI
+    const bukti = document.getElementById("bukti").files[0];
+    const adminNumber = "6287784555835";
+    const imgbbKey = "6770bf49c86db0e1d9dfe512091e8e79";
+
+    if (!bukti) {
+      alert("Upload bukti transfer terlebih dahulu.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = function () {
+      const base64 = reader.result.split(",")[1];
+      const formData = new FormData();
+      formData.append("image", base64);
+
+      fetch(`https://api.imgbb.com/1/upload?key=${imgbbKey}`, {
+        method: "POST",
+        body: formData
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          const imgURL = data.data.url;
+          const msg = `*ORDER TOP UP GAME*\n\n` +
+            `Nama: ${nama}\n` +
+            `Game: ${game}\n` +
+            `ID Game: ${idgame}\n` +
+            `Nominal: ${diamond}\n` +
+            `Pembayaran: ${pembayaran}\n` +
+            `Nomor E-Wallet: ${nomorEwallet}\n` +
+            `Link QRIS: ${pembayaran === "QRIS" ? linkQRIS : '-'}\n` +
+            `Bukti Transfer: ${imgURL}\n\n` +
+            `Harap tunggu konfirmasi admin.`;
+
+          window.open(`https://wa.me/${adminNumber}?text=${encodeURIComponent(msg)}`, '_blank');
+        } else {
+          alert("Gagal upload bukti transfer.");
+        }
+      })
+      .catch(() => alert("Gagal menghubungi server upload."));
+    };
+
+    reader.readAsDataURL(bukti);
+  });
+</script>
+</body>
+</html>
